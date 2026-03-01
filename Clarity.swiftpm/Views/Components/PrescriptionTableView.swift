@@ -42,6 +42,7 @@ struct PrescriptionTableView: View {
             VStack(alignment: .leading, spacing: 12) {
                 Text(title)
                     .font(.headline)
+                    .accessibilityAddTraits(.isHeader)
                 
                 HStack(spacing: 0) {
                     // 1. Add Anchor to SPH
@@ -72,12 +73,12 @@ struct PrescriptionTableView: View {
                 
                 // The Inline Selectors (Rulers)
                 if activeField == sphereId {
-                    VisualRulerScaleView(value: doubleBinding(for: sph))
+                    VisualRulerScaleView(value: doubleBinding(for: sph), fieldLabel: sphereId == .odSphere ? "Right eye sphere" : "Left eye sphere")
                         .padding(.top, 4)
                         .transition(.opacity)
                         .walkthroughAnchor(sphereId == .odSphere ? "sph_ruler" : nil)
                 } else if activeField == cylId {
-                    VisualRulerScaleView(value: doubleBinding(for: cyl))
+                    VisualRulerScaleView(value: doubleBinding(for: cyl), fieldLabel: cylId == .odCyl ? "Right eye cylinder" : "Left eye cylinder")
                         .padding(.top, 4)
                         .transition(.opacity)
                         .walkthroughAnchor(cylId == .odCyl ? "cyl_ruler" : nil)
@@ -101,7 +102,7 @@ struct PrescriptionTableView: View {
                 Text(title)
                     .font(.caption2.weight(.bold))
                     .foregroundColor(isActive ? .accentColor : .secondary)
-                
+
                 Text(text.isEmpty ? (title == "AXIS" ? "0" : "0.00") : text)
                     .font(.body.weight(isActive ? .semibold : .regular))
                     .foregroundColor(isActive ? .primary : .primary.opacity(0.6))
@@ -124,6 +125,8 @@ struct PrescriptionTableView: View {
         }
         // 4. ADDED TACTILE BUTTON STYLE
         .buttonStyle(SegmentButtonStyle())
+        .accessibilityLabel(fieldAccessibilityLabel(title: title, text: text))
+        .accessibilityHint(isActive ? "Double-tap to close ruler" : "Double-tap to open adjustment ruler")
     }
     
     private func verticalDivider() -> some View {
@@ -133,6 +136,18 @@ struct PrescriptionTableView: View {
             .opacity(0.5)
     }
     
+    // MARK: - Accessibility
+
+    private func fieldAccessibilityLabel(title: String, text: String) -> String {
+        let v = text.isEmpty ? (title == "AXIS" ? "0" : "0.00") : text
+        switch title {
+        case "SPH":  return "Sphere, \(v) diopters"
+        case "CYL":  return "Cylinder, \(v) diopters"
+        case "AXIS": return "Axis, \(v) degrees"
+        default:     return title
+        }
+    }
+
     // MARK: - Logic
     
     private func toggleActiveField(_ field: ActiveScaleField) {

@@ -13,6 +13,7 @@ struct TaboMeasurementView: View {
             Text("Tabo Axis & Pupillary Distance")
                 .font(.headline)
                 .padding(.horizontal, 4)
+                .accessibilityAddTraits(.isHeader)
             
             // 2. Grouped Card Background
             HStack(spacing: 16) {
@@ -29,6 +30,7 @@ struct TaboMeasurementView: View {
                     Text("PD")
                         .font(.subheadline.weight(.semibold))
                         .foregroundColor(.secondary)
+                        .accessibilityHidden(true)
                     
                     // Stacked vertically to prevent horizontal squishing on smaller iPhones
                     VStack(spacing: 12) {
@@ -37,10 +39,13 @@ struct TaboMeasurementView: View {
                                 .keyboardType(.decimalPad)
                                 .multilineTextAlignment(.center)
                                 .frame(width: 44)
-                            
+                                .accessibilityLabel("Pupillary distance")
+                                .accessibilityHint("Enter value in millimeters")
+
                             Text("mm")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
+                                .accessibilityHidden(true)
                         }
                         .padding(.vertical, 8)
                         .padding(.horizontal, 10)
@@ -52,16 +57,18 @@ struct TaboMeasurementView: View {
                         if ARFaceTrackingConfiguration.isSupported {
                             Button {
                                 isShowingScanner = true
-                            } label: {                                    Image(systemName: "faceid")
-                                .font(.title3)
-                                .foregroundColor(.white)
-                                .padding(10)
-                                .background(Color.accentColor)
-                                .clipShape(Capsule())
+                            } label: {
+                                Image(systemName: "faceid")
+                                    .font(.title3)
+                                    .foregroundColor(.white)
+                                    .padding(10)
+                                    .background(Color.accentColor)
+                                    .clipShape(Capsule())
                             }
                             .buttonStyle(.plain)
-                            // Subtle shadow to make the CTA pop
                             .shadow(color: Color.accentColor.opacity(0.3), radius: 4, x: 0, y: 2)
+                            .accessibilityLabel("Measure PD with face scanner")
+                            .accessibilityHint("Opens AR camera to automatically measure your pupillary distance")
                         }
                     }
                 }

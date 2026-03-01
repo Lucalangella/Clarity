@@ -14,6 +14,7 @@ struct LensVisualizationView: View {
                 .padding(.horizontal, 20)
                 .padding(.top, 20)
                 .padding(.bottom, 16)
+                .accessibilityAddTraits(.isHeader)
 
             HStack(spacing: 16) {
                 EyeLensCard(
@@ -51,6 +52,12 @@ struct EyeLensCard: View {
 
     @State private var selectedIndex: EyeLensIndex = .poly
 
+    private var lensDescription: String {
+        let type = sphericalEquivalent < -0.12 ? "concave minus lens" :
+                   sphericalEquivalent > 0.12  ? "convex plus lens"  : "plano lens"
+        return "\(eyeSubtitle) cross-section: \(type), spherical equivalent \(String(format: "%+.2f", sphericalEquivalent)) diopters, \(selectedIndex.label) index"
+    }
+
     private var sphericalEquivalent: Double {
         let sph = Double(sphere.replacingOccurrences(of: "+", with: "")) ?? 0
         let cyl = Double(cylinder.replacingOccurrences(of: "+", with: "")) ?? 0
@@ -79,6 +86,7 @@ struct EyeLensCard: View {
                         .padding(.vertical, 4)
                         .background(Color.secondary.opacity(0.12))
                         .cornerRadius(8)
+                        .accessibilityLabel(String(format: "Spherical equivalent %+.2f diopters", sphericalEquivalent))
                 }
             }
             .padding(.horizontal, 16)
@@ -106,6 +114,8 @@ struct EyeLensCard: View {
             .frame(height: 110)
             .padding(.horizontal, 16)
             .padding(.bottom, 16)
+            .accessibilityLabel(lensDescription)
+            .accessibilityAddTraits(.isImage)
         }
         .background(Color(UIColor.secondarySystemGroupedBackground))
         .cornerRadius(16)

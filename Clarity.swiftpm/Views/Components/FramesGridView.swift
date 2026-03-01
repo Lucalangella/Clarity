@@ -23,6 +23,7 @@ struct FramesGridView: View {
             HStack {
                 Text("Frames")
                     .font(.headline)
+                    .accessibilityAddTraits(.isHeader)
 
                 Spacer()
 
@@ -48,6 +49,7 @@ struct FramesGridView: View {
                     let isRecommended = recommendedFrames.contains(frameName)
                     let isDimmed = !recommendationTitles.isEmpty && !recommendedFrames.contains(frameName)
 
+                    let displayName = frameName.capitalized.replacingOccurrences(of: "_", with: " ")
                     NavigationLink(value: frameName) {
                         VStack(spacing: 8) {
                             ZStack(alignment: .topTrailing) {
@@ -64,6 +66,7 @@ struct FramesGridView: View {
                                         RoundedRectangle(cornerRadius: 12)
                                             .stroke(isRecommended ? Color.accentColor.opacity(0.5) : Color.clear, lineWidth: 2)
                                     )
+                                    .accessibilityHidden(true)
 
                                 if isRecommended {
                                     Image(systemName: "checkmark.circle.fill")
@@ -74,15 +77,19 @@ struct FramesGridView: View {
                                         .clipShape(Circle())
                                         .offset(x: 6, y: -6)
                                         .shadow(color: Color.black.opacity(0.15), radius: 2, x: 0, y: 1)
+                                        .accessibilityHidden(true)
                                 }
                             }
 
-                            Text(frameName.capitalized.replacingOccurrences(of: "_", with: " "))
+                            Text(displayName)
                                 .font(.caption2)
                                 .fontWeight(isRecommended ? .bold : .medium)
                                 .foregroundColor(.primary)
+                                .accessibilityHidden(true)
                         }
                     }
+                    .accessibilityLabel(isRecommended ? "\(displayName) frames, recommended" : "\(displayName) frames")
+                    .accessibilityHint("View in 3D")
                     .buttonStyle(CardButtonStyle())
                     .opacity(isDimmed ? 0.35 : 1.0)
                     .animation(.easeInOut(duration: 0.25), value: isDimmed)
@@ -96,6 +103,7 @@ struct FramesGridView: View {
                 HStack(spacing: 6) {
                     Image(systemName: recommendationTitles.isEmpty ? "checkmark.seal.fill" : "info.circle.fill")
                         .foregroundColor(recommendationTitles.isEmpty ? .green : .accentColor)
+                        .accessibilityHidden(true)
                     Text(recommendationTitles.isEmpty ? "All Frames Suitable" : "Optical Recommendation")
                         .font(.subheadline.bold())
                         .foregroundColor(recommendationTitles.isEmpty ? .green : .accentColor)
@@ -106,6 +114,7 @@ struct FramesGridView: View {
                     .lineSpacing(4)
                     .foregroundColor(.secondary)
             }
+            .accessibilityElement(children: .combine)
             .padding()
             .background((recommendationTitles.isEmpty ? Color.green : Color.accentColor).opacity(0.05))
             .cornerRadius(12)

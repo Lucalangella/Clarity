@@ -70,6 +70,17 @@ struct ProtractorView: View {
                     }
             )
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(isOS ? "Left eye cylinder axis" : "Right eye cylinder axis")
+        .accessibilityValue("\(Int(axisValue)) degrees")
+        .accessibilityAdjustableAction { direction in
+            let current = max(0, min(180, Int(axisValue)))
+            switch direction {
+            case .increment: axisText = "\(min(current + 1, 180))"
+            case .decrement: axisText = "\(max(current - 1, 0))"
+            default: break
+            }
+        }
     }
 
     private func updateAxis(from location: CGPoint, center: CGPoint) {

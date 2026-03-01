@@ -3,6 +3,7 @@ import SwiftUI
 
 struct VisualRulerScaleView: View {
     @Binding var value: Double
+    var fieldLabel: String = "Power"
         
         // Ruler configuration
         @State private var dragOffset: CGFloat = 0
@@ -134,6 +135,16 @@ struct VisualRulerScaleView: View {
         }
         .background(Color(UIColor.tertiarySystemFill))
         .cornerRadius(24)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(fieldLabel)
+        .accessibilityValue("\(formatValue(currentVisualValue)), \(conditionText(for: currentVisualValue))")
+        .accessibilityAdjustableAction { direction in
+            switch direction {
+            case .increment: value = min(value + step, range.upperBound)
+            case .decrement: value = max(value - step, range.lowerBound)
+            default: break
+            }
+        }
     }
     
     // MARK: - Helpers

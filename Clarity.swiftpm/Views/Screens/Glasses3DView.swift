@@ -22,7 +22,8 @@ struct Glasses3DView: View {
                  .font(.largeTitle)
                  .fontWeight(.bold)
                  .padding(.top, 40)
-             
+                 .accessibilityAddTraits(.isHeader)
+
              if scene != nil {
                  SceneView(
                      scene: scene,
@@ -32,7 +33,9 @@ struct Glasses3DView: View {
                  .background(Color(UIColor.secondarySystemGroupedBackground))
                  .cornerRadius(16)
                  .padding()
-                 
+                 .accessibilityLabel("3D preview of \(frameName.capitalized) glasses. Use two fingers to rotate and zoom.")
+                 .accessibilityAddTraits(.isImage)
+
                  Spacer()
                  // AR Try-On Button
                  Button(action: {
@@ -41,6 +44,7 @@ struct Glasses3DView: View {
                      HStack {
                          Image(systemName: "face.dashed")
                              .font(.title2)
+                             .accessibilityHidden(true)
                          Text("AR Try-On")
                              .font(.headline)
                      }
@@ -51,6 +55,8 @@ struct Glasses3DView: View {
                      .cornerRadius(14)
                      .padding(.horizontal)
                  }
+                 .accessibilityLabel("Try on \(frameName.capitalized) in AR")
+                 .accessibilityHint("Opens augmented reality view to see the glasses on your face")
                  
              } else {
                  VStack(spacing: 16) {
@@ -118,6 +124,7 @@ struct ARFaceTrackingContainer: View {
                             .padding()
                             .background(Circle().fill(Color.black.opacity(0.4)))
                     }
+                    .accessibilityLabel("Close AR view")
                 }
                 .padding(.top, 50)
                 .padding(.trailing, 20)
@@ -133,6 +140,7 @@ struct ARFaceTrackingContainer: View {
                     Text("Current Fit: S:\(String(format: "%.2f", modelScale)) Y:\(String(format: "%.3f", offsetY)) Z:\(String(format: "%.3f", offsetZ))")
                         .font(.caption.monospaced())
                         .foregroundColor(.white)
+                        .accessibilityHidden(true)
                 }
                 .padding()
                 .background(.ultraThinMaterial)
@@ -145,7 +153,9 @@ struct ARFaceTrackingContainer: View {
     private func tuneSlider(title: String, value: Binding<Float>, range: ClosedRange<Float>) -> some View {
         HStack {
             Text(title).font(.caption).foregroundColor(.white).frame(width: 50, alignment: .leading)
+                .accessibilityHidden(true)
             Slider(value: value, in: range)
+                .accessibilityLabel(title)
         }
     }
 }

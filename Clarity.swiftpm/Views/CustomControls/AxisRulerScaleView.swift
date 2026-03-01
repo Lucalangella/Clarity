@@ -126,8 +126,16 @@ struct AxisRulerScaleView: View {
         }
         .background(Color(UIColor.tertiarySystemFill))
         .cornerRadius(24)
-        .onAppear {
-            lastHapticValue = Int(value)
+        .onAppear { lastHapticValue = Int(value) }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Cylinder axis")
+        .accessibilityValue("\(Int(currentVisualValue)) degrees")
+        .accessibilityAdjustableAction { direction in
+            switch direction {
+            case .increment: value = min(value + 1, range.upperBound)
+            case .decrement: value = max(value - 1, range.lowerBound)
+            default: break
+            }
         }
     }
     
