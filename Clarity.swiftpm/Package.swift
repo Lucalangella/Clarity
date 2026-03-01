@@ -20,14 +20,14 @@ let package = Package(
             teamIdentifier: "CZ4F798NUV",
             displayVersion: "1.0",
             bundleVersion: "1",
-            appIcon: .placeholder(icon: .mic),
+            appIcon: .asset("AppIcon"),
             accentColor: .presetColor(.blue),
             supportedDeviceFamilies: [
                 .pad,
                 .phone
             ],
             supportedInterfaceOrientations: [
-                .portrait,
+                .portrait
             ],
             capabilities: [
                 .camera(purposeString: "Grant access to the camera to calculate PD distance and try on glasses in AR.")
@@ -38,7 +38,9 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "AppModule",
-            path: "."        )
+            path: ".",
+            resources: [.process("usdz")]
+        )
     ],
     swiftLanguageVersions: [.version("6")]
 )

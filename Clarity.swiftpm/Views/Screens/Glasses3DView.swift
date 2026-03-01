@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 import SceneKit
 import ARKit
 import RealityKit
@@ -7,10 +8,14 @@ struct Glasses3DView: View {
     var frameName: String
     @State private var isShowingARView = false
     
+    private var modelURL: URL? {
+        Bundle.main.url(forResource: frameName, withExtension: "usdz")
+    }
+
     private var scene: SCNScene? {
-         return SCNScene(named: "\(frameName).usdz")
-     }
-     
+        guard let url = modelURL else { return nil }
+        return try? SCNScene(url: url)
+    }
      var body: some View {
          VStack(spacing: 24) {
              Text(frameName.capitalized.replacingOccurrences(of: "_", with: " "))
@@ -52,9 +57,15 @@ struct Glasses3DView: View {
                      Image(systemName: "arkit")
                          .font(.system(size: 60))
                          .foregroundColor(.secondary)
-                     Text("Add '\(frameName).usdz' to your project to view the 3D model.")
+                     Text("Model not found: \(frameName).usdz")
                          .font(.callout)
                          .foregroundColor(.secondary)
+                         .multilineTextAlignment(.center)
+                     let rootFiles = Bundle.main.paths(forResourcesOfType: "usdz", inDirectory: nil)
+                     let subdirFiles = Bundle.main.paths(forResourcesOfType: "usdz", inDirectory: "usdz")
+                     Text("Bundle root: \(rootFiles.count) usdz\nBundle usdz/: \(subdirFiles.count) usdz")
+                         .font(.caption.monospaced())
+                         .foregroundColor(.orange)
                          .multilineTextAlignment(.center)
                  }
                  .frame(maxWidth: .infinity)
@@ -157,7 +168,8 @@ struct ARFaceTrackingView: UIViewRepresentable {
         arView.session.run(configuration)
         
         let faceAnchor = AnchorEntity(.face)
-        if let glassesEntity = try? Entity.load(named: "\(frameName).usdz") {
+        if let url = Bundle.main.url(forResource: frameName, withExtension: "usdz"),
+           let glassesEntity = try? Entity.load(contentsOf: url) {
             glassesEntity.name = "virtualGlasses"
             applyGlassMaterials(to: glassesEntity)
             faceAnchor.addChild(glassesEntity)
