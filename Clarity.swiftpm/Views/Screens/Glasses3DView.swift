@@ -58,7 +58,7 @@ struct Glasses3DView: View {
                          .multilineTextAlignment(.center)
                  }
                  .frame(maxWidth: .infinity)
-                 .frame(height: 300)
+                 .frame(height: 800)
                  .background(Color(UIColor.secondarySystemGroupedBackground))
                  .cornerRadius(16)
                  .padding()

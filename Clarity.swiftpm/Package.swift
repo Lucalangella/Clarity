@@ -28,9 +28,6 @@ let package = Package(
             ],
             supportedInterfaceOrientations: [
                 .portrait,
-                .landscapeRight,
-                .landscapeLeft,
-                .portraitUpsideDown(.when(deviceFamilies: [.pad]))
             ],
             capabilities: [
                 .camera(purposeString: "Grant access to the camera to calculate PD distance and try on glasses in AR.")
@@ -41,8 +38,7 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "AppModule",
-            path: "."
-        )
+            path: "."        )
     ],
     swiftLanguageVersions: [.version("6")]
 )
