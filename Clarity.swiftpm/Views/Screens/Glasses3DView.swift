@@ -168,27 +168,39 @@ struct ARFaceTrackingView: UIViewRepresentable {
     var offsetZ: Float
     
     func makeUIView(context: Context) -> ARView {
-        let arView = ARView(frame: .zero)
-        arView.session.delegate = context.coordinator
-        
-        guard ARFaceTrackingConfiguration.isSupported else { return arView }
-        
-        let configuration = ARFaceTrackingConfiguration()
-        configuration.isLightEstimationEnabled = true
-        arView.session.run(configuration)
-        
-        let faceAnchor = AnchorEntity(.face)
-        if let url = Bundle.main.url(forResource: frameName, withExtension: "usdz"),
-           let glassesEntity = try? Entity.load(contentsOf: url) {
-            glassesEntity.name = "virtualGlasses"
-            applyGlassMaterials(to: glassesEntity)
-            faceAnchor.addChild(glassesEntity)
+            let arView = ARView(frame: .zero)
+            arView.session.delegate = context.coordinator
+            
+            guard ARFaceTrackingConfiguration.isSupported else { return arView }
+            
+            let configuration = ARFaceTrackingConfiguration()
+            configuration.isLightEstimationEnabled = true
+            arView.session.run(configuration)
+            
+            // MARK: - FIX: Add Virtual "Ring Light"
+            // Create a light source shining directly from the camera
+            let lightEntity = DirectionalLight()
+            lightEntity.light.color = .white
+            lightEntity.light.intensity = 2500 // Adjust this (1000-3000) if it's too bright/dark
+            
+            // Attach it to the camera anchor so it always points at the user's face
+            let cameraAnchor = AnchorEntity(.camera)
+            cameraAnchor.addChild(lightEntity)
+            arView.scene.addAnchor(cameraAnchor)
+            // MARK: - END FIX
+            
+            let faceAnchor = AnchorEntity(.face)
+            if let url = Bundle.main.url(forResource: frameName, withExtension: "usdz"),
+               let glassesEntity = try? Entity.load(contentsOf: url) {
+                glassesEntity.name = "virtualGlasses"
+                applyGlassMaterials(to: glassesEntity)
+                faceAnchor.addChild(glassesEntity)
+            }
+            
+            arView.scene.addAnchor(faceAnchor)
+            context.coordinator.arView = arView
+            return arView
         }
-        
-        arView.scene.addAnchor(faceAnchor)
-        context.coordinator.arView = arView
-        return arView
-    }
     
     func updateUIView(_ uiView: ARView, context: Context) {
         if let glasses = uiView.scene.findEntity(named: "virtualGlasses") {
