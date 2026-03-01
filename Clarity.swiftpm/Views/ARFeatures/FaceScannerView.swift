@@ -62,16 +62,6 @@ struct FaceScannerView: View {
             }
         }
         .animation(.spring(response: 0.5, dampingFraction: 0.8), value: viewModel.state)
-        .onChange(of: viewModel.state) { _, newState in
-            switch newState {
-            case .measuring:
-                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-            case .processing:
-                UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
-            default:
-                break
-            }
-        }
     }
 
     // MARK: - Subviews

@@ -6,7 +6,6 @@ struct ProtractorView: View {
     
     // Track if the user's finger is actively moving the needle
     @State private var isDragging: Bool = false
-    @State private var lastHapticAngle: Int = -1
     
     var axisValue: Double {
         Double(axisText) ?? 0
@@ -65,8 +64,6 @@ struct ProtractorView: View {
                     }
                     .onEnded { _ in
                         isDragging = false
-                        // Give a satisfying thunk when they let go of the needle
-                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                     }
             )
         }
@@ -101,20 +98,7 @@ struct ProtractorView: View {
         }
 
         let newVisualAngle = Int(round(angle))
-        
-        // --- HAPTIC LOGIC ---
-        // Fire haptics as they drag across the physical degrees
-        if newVisualAngle != lastHapticAngle {
-            if newVisualAngle % 10 == 0 {
-                // A slightly heavier click on major 10-degree marks
-                UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
-            } else {
-                // A light tick on every single degree
-                UIImpactFeedbackGenerator(style: .light).impactOccurred()
-            }
-            lastHapticAngle = newVisualAngle
-        }
-        
+
         // Reverse the visual angle math to get the actual Rx Axis
         let newAxis = isOS ? Double(newVisualAngle) : 180.0 - Double(newVisualAngle)
         

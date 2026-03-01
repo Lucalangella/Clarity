@@ -7,7 +7,6 @@ struct VisualRulerScaleView: View {
         
         // Ruler configuration
         @State private var dragOffset: CGFloat = 0
-        @State private var lastHapticValue: Double = 0
         @State private var baseValue: Double = 0 // Initialize with 0
         @State private var isDragging: Bool = false // Tracks if we are currently mid-drag
         
@@ -86,17 +85,9 @@ struct VisualRulerScaleView: View {
                             dragOffset = drag.translation.width
                             
                             let snapped = currentVisualValue
-                            
-                            // Only trigger haptics when the visible number actually changes
-                            if snapped != lastHapticValue {
-                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                                lastHapticValue = snapped
-                                
-                                // Optional: Update the binding live so other UI
-                                // elements react to the "snapped" changes
-                                if value != snapped {
-                                    value = snapped
-                                }
+
+                            if value != snapped {
+                                value = snapped
                             }
                         }
                         .onEnded { _ in
@@ -104,7 +95,6 @@ struct VisualRulerScaleView: View {
                                 dragOffset = 0
                                 isDragging = false
                             }
-                            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                         }
                 )
             }

@@ -5,7 +5,6 @@ struct AxisRulerScaleView: View {
     
     // Ruler configuration
     @State private var dragOffset: CGFloat = 0
-    @State private var lastHapticValue: Int = 0
     @State private var baseValue: Double = 0
     @State private var isDragging: Bool = false
     
@@ -83,15 +82,10 @@ struct AxisRulerScaleView: View {
                             dragOffset = drag.translation.width
                             
                             let snapped = Int(currentVisualValue)
-                            
-                            if snapped != lastHapticValue {
-                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                                lastHapticValue = snapped
-                                
-                                // Live update the binding so external views (like a protractor) move
-                                if value != Double(snapped) {
-                                    value = Double(snapped)
-                                }
+
+                            // Live update the binding so external views (like a protractor) move
+                            if value != Double(snapped) {
+                                value = Double(snapped)
                             }
                         }
                         .onEnded { drag in
@@ -99,8 +93,6 @@ struct AxisRulerScaleView: View {
                             let predictedOffset = Double(-drag.predictedEndTranslation.width / pointsPerDegree)
                             let predictedRawValue = baseValue + predictedOffset
                             let finalValue = round(predictedRawValue).clamped(to: range)
-                            
-                            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                             
                             withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
                                 value = finalValue
@@ -126,7 +118,6 @@ struct AxisRulerScaleView: View {
         }
         .background(Color(UIColor.tertiarySystemFill))
         .cornerRadius(24)
-        .onAppear { lastHapticValue = Int(value) }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Cylinder axis")
         .accessibilityValue("\(Int(currentVisualValue)) degrees")
