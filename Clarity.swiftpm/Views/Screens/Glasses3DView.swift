@@ -136,11 +136,6 @@ struct ARFaceTrackingContainer: View {
                     tuneSlider(title: "Size", value: $modelScale, range: 0.1...1.5)
                     tuneSlider(title: "Height", value: $offsetY, range: -0.1...0.1)
                     tuneSlider(title: "Depth", value: $offsetZ, range: -0.05...0.15)
-                    
-                    Text("Current Fit: S:\(String(format: "%.2f", modelScale)) Y:\(String(format: "%.3f", offsetY)) Z:\(String(format: "%.3f", offsetZ))")
-                        .font(.caption.monospaced())
-                        .foregroundColor(.white)
-                        .accessibilityHidden(true)
                 }
                 .padding()
                 .background(.ultraThinMaterial)
@@ -177,17 +172,20 @@ struct ARFaceTrackingView: UIViewRepresentable {
             configuration.isLightEstimationEnabled = true
             arView.session.run(configuration)
             
-            // MARK: - FIX: Add Virtual "Ring Light"
-            // Create a light source shining directly from the camera
-            let lightEntity = DirectionalLight()
-            lightEntity.light.color = .white
-            lightEntity.light.intensity = 2500 // Adjust this (1000-3000) if it's too bright/dark
-            
-            // Attach it to the camera anchor so it always points at the user's face
-            let cameraAnchor = AnchorEntity(.camera)
-            cameraAnchor.addChild(lightEntity)
-            arView.scene.addAnchor(cameraAnchor)
-            // MARK: - END FIX
+        // MARK: - FIX: Add Virtual "Ring Light" From Above
+                let lightEntity = DirectionalLight()
+                lightEntity.light.color = .white
+                lightEntity.light.intensity = 2500
+                
+                // Rotate the light downward by 45 degrees
+                // (Negative angle pitches it down, Positive angle pitches it up)
+                let downwardAngle = Float(-45.0 * .pi / 180.0)
+                lightEntity.transform.rotation = simd_quatf(angle: downwardAngle, axis: SIMD3<Float>(1, 0, 0))
+                
+                let cameraAnchor = AnchorEntity(.camera)
+                cameraAnchor.addChild(lightEntity)
+                arView.scene.addAnchor(cameraAnchor)
+                // MARK: - END FIX
             
             let faceAnchor = AnchorEntity(.face)
             if let url = Bundle.main.url(forResource: frameName, withExtension: "usdz"),
